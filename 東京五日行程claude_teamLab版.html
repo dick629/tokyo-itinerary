@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>東京五日行程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans TC',sans-serif;background:#f5f2ec;color:#2a2a2a;min-height:100vh}
+
+  /* Header */
+  .header{background:#fff;border-bottom:1px solid #e8e2d8;padding:2.5rem 1.5rem 2rem;text-align:center}
+  .header h1{font-family:'Playfair Display',serif;font-size:36px;letter-spacing:4px;color:#1a1a1a}
+  .header p{font-size:12px;letter-spacing:3px;color:#888;margin-top:8px;text-transform:uppercase}
+  .header-meta{display:flex;justify-content:center;gap:2rem;margin-top:1.5rem;flex-wrap:wrap}
+  .meta-pill{background:#f5f2ec;padding:6px 16px;border-radius:20px;font-size:12px;color:#666;letter-spacing:1px}
+
+  /* Tabs */
+  .tabs-wrapper{background:#fff;border-bottom:1px solid #e8e2d8;position:sticky;top:0;z-index:100}
+  .tabs{display:flex;max-width:900px;margin:0 auto;padding:0 1rem;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab-btn{flex-shrink:0;padding:16px 24px;font-size:13px;font-weight:500;color:#888;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;font-family:'Noto Sans TC',sans-serif;white-space:nowrap}
+  .tab-btn:hover{color:#2a2a2a}
+  .tab-btn.active{color:#2a2a2a;border-bottom-color:#2a2a2a}
+
+  /* Content */
+  .content{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+  .day-panel{display:none}
+  .day-panel.active{display:block}
+  .day-header{margin-bottom:2rem}
+  .day-title{font-family:'Playfair Display',serif;font-size:26px;color:#1a1a1a}
+  .day-subtitle{font-size:12px;color:#888;letter-spacing:2px;margin-top:6px}
+
+  /* Timeline */
+  .timeline{position:relative}
+  .tl-item{display:grid;grid-template-columns:90px 20px 1fr;gap:0 16px;margin-bottom:0}
+  .tl-time{text-align:right;padding-top:4px;font-size:11px;color:#999;line-height:1.5;padding-right:4px}
+  .tl-spine{display:flex;flex-direction:column;align-items:center;position:relative}
+  .tl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:2px solid #ccc;background:#fff;margin-top:4px;z-index:1}
+  .tl-dot.flight{background:#f5c4b3;border-color:#D85A30}
+  .tl-dot.transport{background:#b5d4f4;border-color:#378ADD}
+  .tl-dot.place{background:#c0dd97;border-color:#639922}
+  .tl-dot.walk{background:#e8e2d8;border-color:#999}
+  .tl-line{width:1px;flex:1;background:#e8e2d8;margin-top:4px;min-height:20px}
+  .tl-body{padding-bottom:24px}
+  .tl-card{background:#fff;border-radius:12px;border:1px solid #e8e2d8;overflow:hidden;transition:box-shadow 0.2s}
+  .tl-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+  .tl-card-header{padding:14px 16px 12px;display:flex;align-items:flex-start;gap:10px}
+  .type-badge{font-size:10px;padding:3px 10px;border-radius:10px;flex-shrink:0;margin-top:2px;font-weight:500}
+  .badge-flight{background:#FAECE7;color:#712B13}
+  .badge-transport{background:#E6F1FB;color:#0C447C}
+  .badge-place{background:#EAF3DE;color:#27500A}
+  .badge-walk{background:#f5f2ec;color:#666}
+  .tl-card-title{font-size:15px;font-weight:500;color:#1a1a1a;flex:1;line-height:1.4}
+  .tl-card-body{padding:0 16px 16px;border-top:1px solid #f0ece5}
+  .info-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+  .info-tag{font-size:11px;color:#888;display:flex;align-items:center;gap:4px}
+  .info-tag svg{flex-shrink:0}
+  .section-label{font-size:10px;font-weight:700;letter-spacing:1px;color:#aaa;text-transform:uppercase;margin-bottom:6px;margin-top:12px}
+  .detail-text{font-size:13px;color:#555;line-height:1.8}
+  .transit-steps{margin-top:8px}
+  .transit-step{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f5f2ec}
+  .transit-step:last-child{border-bottom:none}
+  .step-num{width:20px;height:20px;border-radius:50%;background:#e8e2d8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#666;flex-shrink:0;margin-top:1px}
+  .step-text{font-size:12px;color:#555;line-height:1.6}
+  .step-text strong{color:#1a1a1a;font-weight:500}
+  .time-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .time-chip{background:#f5f2ec;border-radius:8px;padding:5px 12px;font-size:11px;color:#666}
+  .time-chip strong{color:#1a1a1a;font-weight:500}
+  .map-wrap{margin-top:12px;border-radius:8px;overflow:hidden;border:1px solid #e8e2d8}
+  .map-wrap iframe{display:block;width:100%;height:280px;border:none}
+  .feature-list{margin-top:8px}
+  .feature-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:13px;color:#555;line-height:1.6}
+  .feature-dot{width:5px;height:5px;border-radius:50%;background:#639922;flex-shrink:0;margin-top:7px}
+  .stay-badge{display:inline-flex;align-items:center;gap:5px;background:#EAF3DE;border-radius:8px;padding:5px 12px;font-size:12px;color:#27500A;margin-top:8px}
+
+  /* Legend */
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:1.5rem}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#777}
+  .legend-dot{width:10px;height:10px;border-radius:50%}
+
+  /* Map toggle button */
+  .map-toggle{display:flex;align-items:center;gap:6px;background:none;border:1px solid #e8e2d8;border-radius:8px;padding:6px 12px;font-size:12px;color:#555;cursor:pointer;margin-top:10px;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s}
+  .map-toggle:hover{border-color:#999;color:#1a1a1a}
+  .map-toggle svg{transition:transform 0.3s}
+  .map-toggle.open svg{transform:rotate(180deg)}
+  .map-container{display:none}
+  .map-container.open{display:block}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>東京五日行程</h1>
+  <p>Tokyo 5-Day Itinerary</p>
+  <div class="header-meta">
+    <div class="meta-pill">📍 住宿：TAVINOS Asakusa 淺草</div>
+    <div class="meta-pill">✈️ 去程 MM626 ／ 回程 MM625</div>
+    <div class="meta-pill">🗓 Day 1–5 完整規劃</div>
+  </div>
+</div>
+
+<div class="tabs-wrapper">
+  <div class="tabs" id="tabsRow">
+    <button class="tab-btn active" onclick="showDay(0)">第一天 — 淺草</button>
+    <button class="tab-btn" onclick="showDay(1)">第二天 — 秋葉原·晴空塔</button>
+    <button class="tab-btn" onclick="showDay(2)">第三天 — 橫濱</button>
+    <button class="tab-btn" onclick="showDay(3)">第四天 — 築地·銀座</button>
+    <button class="tab-btn" onclick="showDay(4)">第五天 — 返程</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#D85A30"></div>航班</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>交通</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#639922"></div>景點／餐飲</div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div id="day0" class="day-panel active">
+    <div class="day-header">
+      <div class="day-title">Day 1 — 抵達東京，夜遊淺草</div>
+      <div class="day-subtitle">ARRIVAL · ASAKUSA NIGHT WALK</div>
+    </div>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-time">10:50<br>15:20</div>
+        <div class="tl-spine"><div class="tl-dot flight"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-flight">✈ 航班</span>
+              <div class="tl-card-title">MM626 — 抵達成田機場</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="detail-text">成田國際機場（NRT），日本最主要的國際航空樞紐。入境後需通過海關、行李提領。建議預留 60–90 分鐘的出關時間再搭車。</div>
+              <div class="time-chips">
+                <div class="time-chip">🕐 出關預估 60–90 分鐘</div>
+                <div class="time-chip">📍 成田機場第二航廈（MM 使用）</div>
+              </div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Narita+International+Airport&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">15:20<br>17:00</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚆 交通</span>
+              <div class="tl-card-title">成田機場 → 淺草（飯店）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="section-label">推薦方式 A：京成 Access 特快（省錢首選）</div>
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">成田機場第二航廈站搭乘 <strong>京成 Access 特快（往都營淺草線直通）</strong></div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text"><strong>全程無需轉車</strong>，直接在「淺草站」下車即可</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">⏱ 車程約 68 分鐘</div>
+                <div class="time-chip">💴 約 1,330 日圓</div>
+                <div class="time-chip">🔄 無需換車</div>
+              </div>
+              <div class="section-label" style="margin-top:14px">推薦方式 B：京成 Skyliner（速度最快）</div>
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">搭 <strong>Skyliner</strong> 至「日暮里站」（約 41 分鐘）</div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">轉乘 <strong>JR 山手線</strong> 至「上野站」（約 2 分鐘）</div></div>
+                <div class="transit-step"><div class="step-num">3</div><div class="step-text">轉乘 <strong>東京 Metro 銀座線</strong> 至「淺草站」（約 6 分鐘）</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">⏱ 全程約 55–65 分鐘</div>
+                <div class="time-chip">💴 Skyliner 約 2,570 日圓＋地鐵費</div>
+                <div class="time-chip">🪑 有指定座位，適合帶大行李</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">17:00<br>18:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🏨 住宿</span>
+              <div class="tl-card-title">TAVINOS Asakusa 飯店入住</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>設計型商旅，位於淺草核心地帶，步行至雷門僅約 5 分鐘</div>
+                <div class="feature-item"><div class="feature-dot"></div>建議 Check-in 後先行李 Check-in，輕裝探索淺草</div>
+              </div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Hotel+Tavinos+Asakusa&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">19:00<br>21:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🍜 餐飲</span>
+              <div class="tl-card-title">晚餐聚會 — 淺草周邊</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>淺草是東京老下町，餐廳選擇豐富：壽司、天婦羅、居酒屋、拉麵皆有</div>
+                <div class="feature-item"><div class="feature-dot"></div>推薦前往「鷲谷通り」或「六區商店街」一帶，選擇多元且不貴</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 2 小時</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Asakusa+Tokyo+restaurants&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">21:00<br>21:45</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🌙 景點</span>
+              <div class="tl-card-title">隅田川夜景散步 — 吾妻橋</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>吾妻橋是欣賞東京晴空塔倒映在隅田川的最佳地點之一</div>
+                <div class="feature-item"><div class="feature-dot"></div>橋旁的朝日啤酒總部大樓（金色火焰雕塑）也是著名地標，夜間燈光效果極佳</div>
+                <div class="feature-item"><div class="feature-dot"></div>從飯店步行前往，約 5–8 分鐘</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 45 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Azumabashi+Bridge+Asakusa&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">21:45<br>22:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🏯 景點</span>
+              <div class="tl-card-title">淺草寺夜間點燈</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>東京最古老的寺廟，建於西元 645 年，供奉觀世音菩薩</div>
+                <div class="feature-item"><div class="feature-dot"></div>夜間點燈時（至 23:00），雷門、寶蔵門、五重塔皆有燈光照明，氣氛莊嚴神秘</div>
+                <div class="feature-item"><div class="feature-dot"></div>避開白天人潮，夜晚遊客較少，拍照更從容</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 45 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Senso-ji+Temple+Asakusa&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div id="day1" class="day-panel">
+    <div class="day-header">
+      <div class="day-title">Day 2 — 秋葉原電器街 × 東京晴空塔</div>
+      <div class="day-subtitle">AKIHABARA · TOKYO SKYTREE</div>
+    </div>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-time">09:30</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚆 交通</span>
+              <div class="tl-card-title">淺草 → 秋葉原（筑波快線）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="section-label">注意：筑波快線淺草站 ≠ 一般淺草站</div>
+              <div class="detail-text" style="color:#c0392b;font-size:12px;margin-bottom:10px">⚠️ 筑波快線（TX）的淺草站距離 Metro 淺草站步行約 10 分鐘，注意不要走錯！</div>
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">從飯店步行至「筑波快線 淺草站（TX03）」約 10 分鐘</div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">搭乘 <strong>筑波快線（TX）普通車，往秋葉原方向</strong>，在「秋葉原站（TX01）」下車</div></div>
+                <div class="transit-step"><div class="step-num">3</div><div class="step-text">出 TX 秋葉原站 <strong>A1 出口</strong>，步行至電器街約 3 分鐘</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">🚶 步行至 TX 淺草站 約 10 分鐘</div>
+                <div class="time-chip">🚆 車程約 4 分鐘</div>
+                <div class="time-chip">💴 210 日圓</div>
+                <div class="time-chip">🔄 全程無轉車</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">10:00<br>11:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🎮 景點</span>
+              <div class="tl-card-title">秋葉原電器街</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>日本最大電子產品集散地，也是全球動漫文化聖地，外稱「アキバ」</div>
+                <div class="feature-item"><div class="feature-dot"></div>大型家電商場如 Yodobashi Akiba、BIC Camera，購買電子產品可退稅</div>
+                <div class="feature-item"><div class="feature-dot"></div>中央通兩側林立扭蛋機、模型、Cosplay 服飾、手辦等專賣店</div>
+                <div class="feature-item"><div class="feature-dot"></div>女僕咖啡廳（Maid Café）是獨特體驗，新手推薦 @ほぉ〜むcafé 或 Maidreamin</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Akihabara+Electric+Town+Tokyo&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">11:30<br>13:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🎌 景點</span>
+              <div class="tl-card-title">MANDARAKE Complex ／ GIGO 遊戲中心</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div><strong>MANDARAKE</strong>：日本最知名二手動漫商品店，8 層樓各樓層分類（漫畫、模型、同人誌、玩具），稀有絕版品齊全</div>
+                <div class="feature-item"><div class="feature-dot"></div><strong>GIGO（舊稱 SEGA 秋葉原）</strong>：多層樓街機遊戲中心，有夾娃娃機、太鼓達人、音樂遊戲等</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Mandarake+Complex+Akihabara&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">13:00<br>14:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🍱 餐飲</span>
+              <div class="tl-card-title">午餐 — 秋葉原周邊</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>推薦：拉麵、牛丼（松屋、吉野家）、咖哩（C&C Curry）</div>
+                <div class="feature-item"><div class="feature-dot"></div>也可嘗試主題餐廳（女僕、動漫主題）</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">14:30<br>15:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">☕ 休息</span>
+              <div class="tl-card-title">昭和風喫茶店休息</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>秋葉原保留不少昭和時代（1950s–80s）的老式咖啡店，與現代電器街形成有趣反差</div>
+                <div class="feature-item"><div class="feature-dot"></div>可在此放慢節奏、整理戰利品，再出發晴空塔</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 60 分鐘</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">15:30<br>16:00</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚆 交通</span>
+              <div class="tl-card-title">秋葉原 → 押上（晴空塔）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">從 <strong>JR 秋葉原站</strong>，搭乘 <strong>JR 總武線（往千葉方向）</strong> 至「錦糸町站」（約 5 分鐘）</div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">在錦糸町轉乘 <strong>東京Metro 半藏門線（往押上方向）</strong>，在「押上（晴空塔前）站」下車（約 3 分鐘）</div></div>
+                <div class="transit-step"><div class="step-num">3</div><div class="step-text">押上站直通晴空塔商場 Solamachi，步行 <strong>3 分鐘</strong>即達入口</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">🚶 步行至 JR 秋葉原站 約 3 分鐘</div>
+                <div class="time-chip">🚆 JR 約 5 分鐘</div>
+                <div class="time-chip">🔄 轉乘 1 次</div>
+                <div class="time-chip">🚇 Metro 約 3 分鐘</div>
+                <div class="time-chip">⏱ 全程含等車約 25–30 分鐘</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">16:00<br>17:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🗼 景點</span>
+              <div class="tl-card-title">東京晴空塔 — 天望甲板</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>高 634 公尺，金氏世界紀錄認證的世界第一高塔（電波塔）</div>
+                <div class="feature-item"><div class="feature-dot"></div><strong>天望甲板</strong>（350F）：俯瞰東京全景，天氣好時可遠眺富士山</div>
+                <div class="feature-item"><div class="feature-dot"></div><strong>天望迴廊</strong>（445F）：更高視角，可另加購票入場</div>
+                <div class="feature-item"><div class="feature-dot"></div>17:00 前後進場可同時欣賞日落與夜景，是最佳時間段</div>
+                <div class="feature-item"><div class="feature-dot"></div>建議事先線上購票，省去現場排隊時間</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Tokyo+Skytree&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">17:30<br>19:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🍣 餐飲</span>
+              <div class="tl-card-title">晚餐 — Solamachi 晴空塔商場</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>晴空塔商場「Solamachi」集結超過 300 家商店和餐廳，日式、西式、東南亞料理一應俱全</div>
+                <div class="feature-item"><div class="feature-dot"></div>推薦：Tower Yard 區域的特色餐廳，或 East Yard 6F 的餐廳街</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 2 小時（含用餐與逛街）</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Tokyo+Solamachi+Skytree+Town&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div id="day2" class="day-panel">
+    <div class="day-header">
+      <div class="day-title">Day 3 — 橫濱一日遊</div>
+      <div class="day-subtitle">YOKOHAMA · RED BRICK · CHINATOWN</div>
+    </div>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-time">08:30<br>09:30</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚆 交通</span>
+              <div class="tl-card-title">淺草 → 橫濱（直通，免換車）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="section-label">重要提醒：要搭「直通運轉」班次</div>
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">前往 <strong>都營淺草線「淺草站」</strong>（非 TX 淺草，也非 Metro 淺草）</div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">搭乘 <strong>都營淺草線直通京急本線</strong>，選搭「<strong>往三崎口 / 京急久里浜</strong>」方向的急行或快特列車</div></div>
+                <div class="transit-step"><div class="step-num">3</div><div class="step-text">列車過「泉岳寺站」後進入京急本線，<strong>不需下車轉乘</strong>，繼續坐至「<strong>橫濱站</strong>」下車</div></div>
+              </div>
+              <div class="detail-text" style="color:#c0392b;font-size:12px;margin:8px 0">⚠️ 注意：請避免搭到開往「羽田機場」方向的班次，否則會搭錯！</div>
+              <div class="time-chips">
+                <div class="time-chip">🚆 車程約 45 分鐘</div>
+                <div class="time-chip">💴 約 630 日圓</div>
+                <div class="time-chip">🔄 無需換車（直通運轉）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">10:00<br>12:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🧱 景點</span>
+              <div class="tl-card-title">橫濱紅磚倉庫</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>明治時代保留至今的紅磚建築群，現改建為文創商場和活動廣場</div>
+                <div class="feature-item"><div class="feature-dot"></div>內有獨立設計品牌、雜貨、咖啡廳、橫濱限定伴手禮</div>
+                <div class="feature-item"><div class="feature-dot"></div>廣場面向橫濱港，可欣賞港灣景色，拍照背景極佳</div>
+                <div class="feature-item"><div class="feature-dot"></div>從橫濱站可步行前往（約 15–20 分鐘），或搭港未來線至「馬車道站」約 3 分鐘</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 2 小時</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Yokohama+Red+Brick+Warehouse&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">12:00<br>13:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🍽 餐飲</span>
+              <div class="tl-card-title">午餐 — 倉庫區餐廳</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>紅磚倉庫內有多家橫濱特色餐廳，可品嚐橫濱名物「港式拿破崙義大利麵（ナポリタン）」</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">13:30<br>15:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🏮 景點</span>
+              <div class="tl-card-title">橫濱中華街</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>日本最大中華街，也是世界三大中華街之一，占地超過 0.2 平方公里</div>
+                <div class="feature-item"><div class="feature-dot"></div>超過 600 家中式餐廳、食品、雜貨店，可邊走邊吃</div>
+                <div class="feature-item"><div class="feature-dot"></div>特色必吃：豚まん（包子）、北京烤鴨、杏仁豆腐、小籠包</div>
+                <div class="feature-item"><div class="feature-dot"></div>港未來線「元町・中華街站」出站即達</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 2 小時</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Yokohama+Chinatown&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">15:30<br>17:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">⚓ 景點</span>
+              <div class="tl-card-title">山下公園</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>横濱港灣邊的歐式風格公園，建於 1930 年，是日本著名的玫瑰花圃之一</div>
+                <div class="feature-item"><div class="feature-dot"></div>可見停靠的冰川丸輪船（日本現存最古老的客輪，可入內參觀）</div>
+                <div class="feature-item"><div class="feature-dot"></div>視野開闊，遠眺橫濱港灣與地標塔，黃昏時景色尤其迷人</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Yamashita+Park+Yokohama&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">17:00<br>18:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🌆 景點</span>
+              <div class="tl-card-title">橫濱地標塔 — Sky Garden 展望台</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>橫濱第一高樓、日本第三高建築，69 樓的「Sky Garden」展望台高度達 273 公尺</div>
+                <div class="feature-item"><div class="feature-dot"></div>可 360 度鳥瞰橫濱港灣、東京灣、天氣好時可遠眺富士山</div>
+                <div class="feature-item"><div class="feature-dot"></div>夕陽時分入場最值得，可欣賞橫濱港從白晝轉換為璀璨夜景</div>
+                <div class="feature-item"><div class="feature-dot"></div>大人門票約 1,000 日圓（可線上購票）</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Yokohama+Landmark+Tower&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">18:30<br>20:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🌊 餐飲</span>
+              <div class="tl-card-title">晚餐 — 港未來 Minato Mirai</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>地標塔周邊「橫濱皇后廣場」、「WORLD PORTERS」等有多家餐廳</div>
+                <div class="feature-item"><div class="feature-dot"></div>夜景餐廳俯瞰橫濱港灣夜景，用餐體驗佳</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">20:00<br>21:00</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚆 交通</span>
+              <div class="tl-card-title">橫濱 → 淺草（回程）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">前往「<strong>橫濱站</strong>」的京急本線月台</div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">搭乘 <strong>京急本線直通都營淺草線</strong>，選搭「<strong>往印旛日本醫大 / 押上</strong>」方向列車</div></div>
+                <div class="transit-step"><div class="step-num">3</div><div class="step-text">在「<strong>淺草站</strong>」下車（都營淺草線）</div></div>
+              </div>
+              <div class="detail-text" style="color:#888;font-size:12px;margin-top:8px">💡 若搭到直通班次，全程無需換車，約 45 分鐘直達淺草。</div>
+              <div class="time-chips">
+                <div class="time-chip">🚆 車程約 45 分鐘</div>
+                <div class="time-chip">💴 約 630 日圓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DAY 4 -->
+  <div id="day3" class="day-panel">
+    <div class="day-header">
+      <div class="day-title">Day 4 — 築地海鮮 × teamLab × 銀座文創</div>
+      <div class="day-subtitle">TSUKIJI · TOYOSU · GINZA</div>
+    </div>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-time">09:00</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚆 交通</span>
+              <div class="tl-card-title">淺草 → 築地（都營淺草線）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">搭乘 <strong>都營淺草線</strong>，往「西馬込」或「泉岳寺」方向</div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">在「<strong>東銀座站</strong>」下車，步行至築地場外市場約 5 分鐘</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">🚆 車程約 15 分鐘</div>
+                <div class="time-chip">💴 約 290 日圓</div>
+                <div class="time-chip">🔄 無需換車</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">09:30<br>11:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🐟 景點</span>
+              <div class="tl-card-title">築地場外市場</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>即使仲卸市場遷至豐洲，場外市場仍完整保留，有超過 400 家海鮮、食材、廚具店鋪</div>
+                <div class="feature-item"><div class="feature-dot"></div>必吃：玉子燒、海膽、帝王蟹腳、鮪魚丼、海鮮串燒</div>
+                <div class="feature-item"><div class="feature-dot"></div>以邊走邊吃為主，無固定座位，早上越早去越新鮮</div>
+                <div class="feature-item"><div class="feature-dot"></div>許多攤位 9–12 點為旺時，建議把握上午前往</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Tsukiji+Outer+Market+Tokyo&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">11:00<br>11:30</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚇 交通</span>
+              <div class="tl-card-title">築地 → teamLab Planets TOKYO DMM（豐洲）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">從築地步行或搭一站前往 <strong>銀座一丁目站／有樂町線</strong></div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">搭乘 <strong>東京 Metro 有樂町線</strong> 至「<strong>豐洲站</strong>」</div></div>
+                <div class="transit-step"><div class="step-num">3</div><div class="step-text">轉乘 <strong>百合海鷗線</strong> 至「<strong>新豐洲站</strong>」，步行 1 分鐘抵達</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">🚇 車程約 20–30 分鐘</div>
+                <div class="time-chip">💴 約 370 日圓</div>
+                <div class="time-chip">💡 比公車穩定，不怕銀座沿線塞車</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">11:30<br>13:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🎨 景點</span>
+              <div class="tl-card-title">teamLab Planets TOKYO DMM</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>沉浸式數位藝術館，展區需脫鞋，有部分空間會走進淺水中</div>
+                <div class="feature-item"><div class="feature-dot"></div>建議事先預約中午入場時段，現場人多時排隊時間會拉長</div>
+                <div class="feature-item"><div class="feature-dot"></div>建議穿方便活動、好捲褲管的服裝，並預留拍照時間</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 2 小時</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=teamLab+Planets+TOKYO+DMM&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">13:30<br>14:00</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚇 交通</span>
+              <div class="tl-card-title">豐洲 → 銀座</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">由 <strong>新豐洲站</strong> 搭乘 <strong>百合海鷗線</strong> 至「豐洲站」或返回有樂町線沿線</div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">轉乘 <strong>東京 Metro 有樂町線</strong>，回到「<strong>銀座一丁目站</strong>」</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">🚇 車程約 20–30 分鐘</div>
+                <div class="time-chip">💴 約 370 日圓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">14:00<br>15:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🛍 景點</span>
+              <div class="tl-card-title">銀座中央通逛街</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>東京最高級的商業大道，CHANEL、LV、GUCCI 等精品旗艦店雲集</div>
+                <div class="feature-item"><div class="feature-dot"></div>週末 12:00–18:00 中央通封街為行人專用道（步行者天國），可自由漫步</div>
+                <div class="feature-item"><div class="feature-dot"></div>百貨公司包含 Matsuya Ginza、Mitsukoshi、Ginza Six 等</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Ginza+Tokyo&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">15:30<br>17:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🖋 景點</span>
+              <div class="tl-card-title">銀座文創巡禮</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div><strong>伊東屋（Itoya）</strong>：創業於 1904 年的超級文具店，12 層樓文具、辦公、藝術用品，文具控必訪</div>
+                <div class="feature-item"><div class="feature-dot"></div><strong>鳩居堂</strong>：日本老字號和紙、香、書法用品店，銀座地標之一</div>
+                <div class="feature-item"><div class="feature-dot"></div><strong>GINZA SIX</strong>：銀座最大複合式商場，13 層樓，地下劇場 Kanze Nohgakudo 也值得一看</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 2 小時</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Itoya+Ginza+Tokyo&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">17:30<br>19:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🍷 餐飲</span>
+              <div class="tl-card-title">晚餐 — 銀座餐廳</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>銀座餐廳選擇豐富，從高端割烹料理到親民的定食、壽司皆有</div>
+                <div class="feature-item"><div class="feature-dot"></div>建議預訂或避開晚餐高峰期（19:00 後）</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">19:00<br>19:30</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚇 交通</span>
+              <div class="tl-card-title">銀座 → 淺草（Metro 銀座線）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">前往 <strong>東京Metro 銀座線「銀座站」</strong></div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">搭乘 <strong>銀座線</strong>，往「淺草」方向，直達「<strong>淺草站</strong>」下車</div></div>
+              </div>
+              <div class="time-chips">
+                <div class="time-chip">🚇 車程約 13 分鐘</div>
+                <div class="time-chip">💴 約 220 日圓</div>
+                <div class="time-chip">🔄 無需換車</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DAY 5 -->
+  <div id="day4" class="day-panel">
+    <div class="day-header">
+      <div class="day-title">Day 5 — 仲見世採買，返程出發</div>
+      <div class="day-subtitle">NAKAMISE · DEPARTURE</div>
+    </div>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-time">08:00<br>09:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">☕ 餐飲</span>
+              <div class="tl-card-title">早午餐 — 淺草咖啡廳</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>推薦：「喫茶 You」的蛋包飯、「PELICAN CAFE」的吐司三明治，都是淺草人氣早午餐</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">09:30<br>10:30</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🏨 住宿</span>
+              <div class="tl-card-title">飯店退房 — 寄放行李</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>辦理退房後，可將大型行李寄放於飯店，輕裝最後採買</div>
+                <div class="feature-item"><div class="feature-dot"></div>也可使用宅配服務，直接將行李送至成田機場（前一天 17:00 前受理），抵達機場直接 check-in 超方便</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 1 小時</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">10:30<br>12:00</div>
+        <div class="tl-spine"><div class="tl-dot place"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-place">🛍 購物</span>
+              <div class="tl-card-title">仲見世商店街 — 最後伴手禮採買</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div>東京最古老的商店街，從淺草寺雷門延伸至寶藏門，兩側有超過 90 家商店</div>
+                <div class="feature-item"><div class="feature-dot"></div>必買：人形燒、雷おこし（雷米菓）、淺草限定的手工扇子、風鈴、和紙製品</div>
+                <div class="feature-item"><div class="feature-dot"></div>早上 10:30 之後商家陸續開齊，比午後人潮稀少，採買更輕鬆</div>
+              </div>
+              <div class="stay-badge">⏱ 預計停留 90 分鐘</div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Nakamise+Shopping+Street+Asakusa&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">12:30<br>13:00</div>
+        <div class="tl-spine"><div class="tl-dot transport"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-transport">🚆 交通</span>
+              <div class="tl-card-title">淺草 → 成田機場（京成 Access 特快）</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="transit-steps">
+                <div class="transit-step"><div class="step-num">1</div><div class="step-text">回飯店取回行李，步行至 <strong>都營淺草線「淺草站」</strong></div></div>
+                <div class="transit-step"><div class="step-num">2</div><div class="step-text">搭乘 <strong>京成 Access 特快（往成田機場方向）</strong>，一路直達「<strong>成田機場第二航廈站</strong>」</div></div>
+              </div>
+              <div class="detail-text" style="color:#c0392b;font-size:12px;margin:8px 0">⚠️ MM625 班機 16:50 起飛，建議 14:30 前抵達機場以預留報到時間！Access 特快約 68 分鐘，請確認從飯店出發時間。</div>
+              <div class="time-chips">
+                <div class="time-chip">🚆 車程約 68 分鐘</div>
+                <div class="time-chip">💴 約 1,330 日圓</div>
+                <div class="time-chip">🔄 無需換車</div>
+                <div class="time-chip">⚠️ 建議 13:00 前出發</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">16:50<br>19:40</div>
+        <div class="tl-spine"><div class="tl-dot flight"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <span class="type-badge badge-flight">✈ 航班</span>
+              <div class="tl-card-title">MM625 — 返程</div>
+            </div>
+            <div class="tl-card-body">
+              <div class="detail-text">成田機場第二航廈出境。航班 16:50 起飛，預計 19:40 抵達。建議 14:30–15:00 前完成報到與安全檢查。</div>
+              <div class="time-chips">
+                <div class="time-chip">✈ 飛行時間約 3 小時</div>
+                <div class="time-chip">📍 成田機場第二航廈（Peach 使用）</div>
+              </div>
+              <button class="map-toggle" onclick="toggleMap(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                查看地圖
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="map-container">
+                <div class="map-wrap"><iframe src="https://www.google.com/maps?q=Narita+International+Airport+Terminal+2&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showDay(idx){
+  document.querySelectorAll('.day-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-btn').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleMap(btn){
+  const container = btn.nextElementSibling;
+  const isOpen = container.classList.contains('open');
+  container.classList.toggle('open');
+  btn.classList.toggle('open');
+  if(isOpen){
+    btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>查看地圖<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>`;
+  }else{
+    btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>收合地圖<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>`;
+  }
+}
+</script>
+
+</body>
+</html>
